@@ -38,11 +38,14 @@
     </main>
 
     <script>
+        let numerosGenerados = [];
         function generar() {
+            // Quitamos la animación para quitar el color a las celdas "ganadoras" anteriores
+            document.querySelectorAll("#celdas div").forEach( c => c.style.animation = "");
             // Para evitar que se repitan, creamos un array donde iremos
             // metiendo los números
-            const numerosGenerados = [];
-            for(let i = 1; i <=7; i++) {
+            numerosGenerados = [];
+            for(let i = 1; i <=6; i++) {
                 let numero;
                 do { // Repetimos mientras el número exista en el array
                     numero = Math.floor(Math.random() * 49 + 1);
@@ -63,7 +66,16 @@
             numerosGenerados.sort((n1, n2) => n1 - n2);
             // cogemos la primera celda
             const celda = document.querySelector("#celdas div");
-            celda.style.animation = "animacionResaltarNumero .2s";
+            // if(numerosGenerados.includes(parseInt(celda.textContent))) {
+            // Como el array contiene números pero dataset.numero es un texto,
+            // hay que convertirlo a número para que lo encuentre
+            if(numerosGenerados.includes(parseInt(celda.dataset.numero))) {
+                celda.offsetWidth // para que vuelva a aplicar la animación
+                celda.style.animation = "animacionResaltarAcierto .2s forwards"
+            } else {
+                celda.offsetWidth
+                celda.style.animation = "animacionResaltarNumero .2s";
+            }
             celda.addEventListener("animationend", mostrarSiguiente);
         }
 
@@ -73,7 +85,13 @@
             // Existe nextSibling pero también devuelve nodos texto (como Enters)
             const siguiente = evt.currentTarget.nextElementSibling;
             if(siguiente != null) { // hay que parar cuando ya no quede ninguna celda
-                siguiente.style.animation = "animacionResaltarNumero .2s";
+                 if(numerosGenerados.includes(parseInt(siguiente.dataset.numero))) {
+                    siguiente.offsetWidth
+                    siguiente.style.animation = "animacionResaltarAcierto .2s forwards"
+                } else {
+                    siguiente.offsetWidth
+                    siguiente.style.animation = "animacionResaltarNumero .2s";
+                }
                 siguiente.addEventListener("animationend", mostrarSiguiente);
             }
         }
@@ -86,6 +104,7 @@
             div.classList.add("text-center");
             div.classList.add("fw-bold");
             div.textContent = i;
+            div.dataset.numero = i;
             celdas.appendChild(div);
         }
 

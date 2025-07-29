@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>ejemplo 3</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+   <style>
+        #celdas {
+            display: grid;
+            grid-template-columns: repeat(10,50px);
+            gap:20px;
+            justify-content: center;
+        }
+
+        @keyframes animacionResaltarNumero {
+            50% {
+                transform: scale(1.1);
+                background-color: rgb(247, 247, 71);
+            }
+        }
+
+        @keyframes animacionResaltarAcierto {
+            to {
+                background-color: rgb(121, 236, 98);
+            }
+        }
+   </style>
+</head>
+<body>
+    <h1 class="text-center bg-primary text-white">Primitiva</h1>
+    <main class="d-flex flex-column gap-2">
+        <input type="button" id="generar" value="generar" class="btn btn-success">
+        <div id="celdas">
+
+        </div>
+    </main>
+
+    <script>
+        function generar() {
+            // Para evitar que se repitan, creamos un array donde iremos
+            // metiendo los números
+            const numerosGenerados = [];
+            for(let i = 1; i <=7; i++) {
+                let numero;
+                do { // Repetimos mientras el número exista en el array
+                    numero = Math.floor(Math.random() * 49 + 1);
+                } while(numerosGenerados.includes(numero));
+                // Incluimos el nuevo número en el array
+                numerosGenerados.push(numero);
+                mostrarPrimitiva(numerosGenerados);
+            }
+        }
+
+        function mostrarPrimitiva(numerosGenerados) {
+            // sort convierte los datos a texto para ordenar
+            // y no es lo que queremos. Por eso hay que pasarle una función
+            // de comparación que acepta dos valores y devuelve:
+            // 0 si son iguales
+            // > 0 si el primer número es mayor que el segundo
+            // < 0 si el primer número es menor que el segundo
+            numerosGenerados.sort((n1, n2) => n1 - n2);
+            // cogemos la primera celda
+            const celda = document.querySelector("#celdas div");
+            celda.style.animation = "animacionResaltarNumero .2s";
+            celda.addEventListener("animationend", mostrarSiguiente);
+        }
+
+        function mostrarSiguiente(evt) {
+            // Con nextElementSibling cogemos el siguiente hermano (la siguiente
+            // celda)
+            // Existe nextSibling pero también devuelve nodos texto (como Enters)
+            const siguiente = evt.currentTarget.nextElementSibling;
+            if(siguiente != null) { // hay que parar cuando ya no quede ninguna celda
+                siguiente.style.animation = "animacionResaltarNumero .2s";
+                siguiente.addEventListener("animationend", mostrarSiguiente);
+            }
+        }
+
+        const celdas = document.getElementById("celdas");
+        for(let i = 1; i <= 49; i++) {
+            const div = document.createElement("div");
+            div.classList.add("p-2");
+            div.classList.add("border");
+            div.classList.add("text-center");
+            div.classList.add("fw-bold");
+            div.textContent = i;
+            celdas.appendChild(div);
+        }
+
+        document.getElementById("generar").addEventListener("click", generar);
+    </script>
+    <noscript>Debes activar JavaScript</noscript>
+</body>
+</html>
